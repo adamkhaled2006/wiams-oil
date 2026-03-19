@@ -102,14 +102,16 @@ document.querySelector("#adminApp").innerHTML = `
           </section>
 
           <section class="panel admin-tab hidden" data-panel="content">
-            <div class="panel-head"><h3>النصوص والمحتوى</h3></div>
+            <div class="panel-head"><h3>الصور الرئيسية والهوية</h3></div>
             <form class="stack" id="contentForm">
               <input class="input" name="store_name" placeholder="اسم المتجر">
-              <input class="input" name="tagline" placeholder="الجملة القصيرة">
-              <input class="input" name="hero_title" placeholder="عنوان الواجهة">
-              <textarea class="input" name="hero_subtitle" placeholder="وصف الواجهة"></textarea>
-              <input class="input" name="hero_note" placeholder="النص الصغير أعلى الواجهة">
-              <button class="btn" type="submit">حفظ النصوص</button>
+              <input class="input" name="tagline" placeholder="الجملة القصيرة تحت اسم المتجر">
+              <input class="input" name="hero_image_1_url" placeholder="رابط الصورة الرئيسية 1">
+              <input class="input" name="hero_image_2_url" placeholder="رابط الصورة الرئيسية 2">
+              <input class="input" name="hero_image_3_url" placeholder="رابط الصورة الرئيسية 3">
+              <input class="input" name="hero_image_4_url" placeholder="رابط الصورة الرئيسية 4">
+              <div class="muted">الصور الأربع ستظهر مكان الصورة الكبيرة أعلى الصفحة وتلف تلقائيًا، والمنتجات تبقى تحتها كما هي.</div>
+              <button class="btn" type="submit">حفظ المحتوى</button>
             </form>
           </section>
 

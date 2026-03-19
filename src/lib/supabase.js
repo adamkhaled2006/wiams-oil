@@ -24,5 +24,10 @@ export const DEFAULT_SETTINGS = {
   snapchat_url: "",
   tiktok_url: "",
   facebook_url: "",
-  telegram_url: ""
+  telegram_url: "",
+  hero_image_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80",
+  hero_image_1_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80",
+  hero_image_2_url: "https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80",
+  hero_image_3_url: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80",
+  hero_image_4_url: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80"
 };
