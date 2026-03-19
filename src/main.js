@@ -161,8 +161,7 @@ function waLink() {
 }
 function getHeroImages() {
   const sliderImages = String(settings.slider_images || "")
-    .split(/?
-|,/)
+    .split(/\r?\n|,/)
     .map(v => String(v || "").trim())
     .filter(Boolean);
 
