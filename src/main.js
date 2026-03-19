@@ -22,15 +22,21 @@ document.querySelector("#app").innerHTML = `
 
 <section class="hero hero-clean">
   <div class="container">
-    <div class="hero-media-card clean-hero-card">
-      <img id="heroImage" class="hero-image" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية للمتجر">
+    <div class="hero-media-card clean-hero-card hero-slider-card">
+      <div class="hero-slider" id="heroSlider">
+        <img id="heroImage1" class="hero-image hero-slide is-active" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الأولى للمتجر">
+        <img id="heroImage2" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثانية للمتجر">
+        <img id="heroImage3" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثالثة للمتجر">
+        <img id="heroImage4" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الرابعة للمتجر">
+      </div>
       <div class="hero-overlay hero-overlay-clean">
-        <div class="hero-chip">الصورة الرئيسية للمتجر</div>
+        <div class="hero-chip">صور رئيسية للمتجر</div>
         <div class="hero-actions">
           <a class="btn" href="#products">تصفح المنتجات</a>
           <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">واتساب</a>
         </div>
       </div>
+      <div class="hero-dots" id="heroDots"></div>
     </div>
   </div>
 </section>
@@ -92,7 +98,8 @@ const $ = (s) => document.querySelector(s);
 const els = {
   storeName: $("#storeName"),
   storeTagline: $("#storeTagline"),
-  heroImage: $("#heroImage"),
+  heroSlider: $("#heroSlider"),
+  heroDots: $("#heroDots"),
   waTop: $("#waTop"),
   waFooter: $("#waFooter"),
   socialLinks: $("#socialLinks"),
@@ -116,6 +123,9 @@ const els = {
 let products = [];
 let settings = { ...DEFAULT_SETTINGS };
 let cart = JSON.parse(localStorage.getItem("wiams-cart") || "[]");
+let heroSlides = [];
+let heroIndex = 0;
+let heroTimer = null;
 
 function saveCart() {
   localStorage.setItem("wiams-cart", JSON.stringify(cart));
@@ -127,6 +137,54 @@ function totalCart() {
 function waLink() {
   const n = sanitizeWhatsapp(settings.whatsapp_number);
   return n ? `https://wa.me/${n}` : "#";
+}
+
+
+function getHeroImages() {
+  return [
+    settings.hero_image_1_url || settings.hero_image_url || DEFAULT_SETTINGS.hero_image_1_url,
+    settings.hero_image_2_url || DEFAULT_SETTINGS.hero_image_2_url,
+    settings.hero_image_3_url || DEFAULT_SETTINGS.hero_image_3_url,
+    settings.hero_image_4_url || DEFAULT_SETTINGS.hero_image_4_url
+  ].map(v => String(v || '').trim()).filter(Boolean);
+}
+
+function renderHeroDots() {
+  els.heroDots.innerHTML = '';
+  heroSlides.forEach((_, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `hero-dot${idx === heroIndex ? ' is-active' : ''}`;
+    btn.setAttribute('aria-label', `الصورة ${idx + 1}`);
+    btn.onclick = () => setHeroSlide(idx, true);
+    els.heroDots.appendChild(btn);
+  });
+}
+
+function setHeroSlide(index, restart = false) {
+  if (!heroSlides.length) return;
+  heroIndex = index % heroSlides.length;
+  heroSlides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === heroIndex));
+  [...els.heroDots.children].forEach((dot, idx) => dot.classList.toggle('is-active', idx === heroIndex));
+  if (restart) startHeroSlider();
+}
+
+function startHeroSlider() {
+  if (heroTimer) clearInterval(heroTimer);
+  if (heroSlides.length <= 1) return;
+  heroTimer = setInterval(() => setHeroSlide(heroIndex + 1), 3500);
+}
+
+function applyHeroImages() {
+  const images = getHeroImages();
+  heroSlides = Array.from(els.heroSlider.querySelectorAll('.hero-slide'));
+  heroSlides.forEach((slide, idx) => {
+    slide.src = images[idx] || images[0] || DEFAULT_SETTINGS.hero_image_1_url;
+    slide.classList.toggle('is-active', idx === 0);
+  });
+  heroIndex = 0;
+  renderHeroDots();
+  startHeroSlider();
 }
 
 function renderSocialLinks() {
@@ -155,7 +213,7 @@ function applySettings() {
   document.title = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeName.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeTagline.textContent = settings.tagline || DEFAULT_SETTINGS.tagline;
-  els.heroImage.src = settings.hero_image_url || DEFAULT_SETTINGS.hero_image_url;
+  applyHeroImages();
   els.waTop.href = waLink();
   els.waFooter.href = waLink();
   renderSocialLinks();
