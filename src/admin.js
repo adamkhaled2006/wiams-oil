@@ -107,11 +107,12 @@ document.querySelector("#adminApp").innerHTML = `
               <input class="input" name="store_name" placeholder="اسم المتجر">
               <input class="input" name="tagline" placeholder="الجملة القصيرة تحت اسم المتجر">
               <input class="input" name="logo_url" placeholder="رابط اللوجو">
-              <input class="input" name="hero_image_1_url" placeholder="رابط الصورة الرئيسية 1">
-              <input class="input" name="hero_image_2_url" placeholder="رابط الصورة الرئيسية 2">
-              <input class="input" name="hero_image_3_url" placeholder="رابط الصورة الرئيسية 3">
-              <input class="input" name="hero_image_4_url" placeholder="رابط الصورة الرئيسية 4">
-              <div class="muted">الصور الأربع ستظهر مكان الصورة الكبيرة أعلى الصفحة وتلف تلقائيًا، والمنتجات تبقى تحتها كما هي.</div>
+              <textarea class="input" name="slider_images" rows="6" placeholder="روابط صور السلايدر — كل رابط بسطر منفصل"></textarea>
+              <div class="muted">حط كل رابط صورة بسطر لوحده، والسلايدر رح يقرأهم من الأدمن تلقائيًا. إذا تركتها فاضية رح يستخدم الصور الأربع القديمة.</div>
+              <input class="input" name="hero_image_1_url" placeholder="رابط الصورة الرئيسية 1 الاحتياطية">
+              <input class="input" name="hero_image_2_url" placeholder="رابط الصورة الرئيسية 2 الاحتياطية">
+              <input class="input" name="hero_image_3_url" placeholder="رابط الصورة الرئيسية 3 الاحتياطية">
+              <input class="input" name="hero_image_4_url" placeholder="رابط الصورة الرئيسية 4 الاحتياطية">
               <button class="btn" type="submit">حفظ المحتوى</button>
             </form>
           </section>

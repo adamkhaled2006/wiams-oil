@@ -26,6 +26,7 @@ export const DEFAULT_SETTINGS = {
   facebook_url: "",
   telegram_url: "",
   logo_url: "",
+  slider_images: "",
   hero_image_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80",
   hero_image_1_url: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80",
   hero_image_2_url: "https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80",

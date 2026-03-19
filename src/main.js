@@ -52,12 +52,7 @@ document.querySelector("#app").innerHTML = `
       </div>
 
       <div class="hero-slider-card split-slider-card">
-        <div class="hero-slider" id="heroSlider">
-          <img id="heroImage1" class="hero-image hero-slide is-active" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الأولى للمتجر">
-          <img id="heroImage2" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثانية للمتجر">
-          <img id="heroImage3" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثالثة للمتجر">
-          <img id="heroImage4" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الرابعة للمتجر">
-        </div>
+        <div class="hero-slider" id="heroSlider"></div>
         <div class="hero-dots hero-dots-split" id="heroDots"></div>
       </div>
     </div>
@@ -165,6 +160,14 @@ function waLink() {
   return n ? `https://wa.me/${n}` : "#";
 }
 function getHeroImages() {
+  const sliderImages = String(settings.slider_images || "")
+    .split(/?
+|,/)
+    .map(v => String(v || "").trim())
+    .filter(Boolean);
+
+  if (sliderImages.length) return sliderImages;
+
   return [
     settings.hero_image_1_url || settings.hero_image_url || DEFAULT_SETTINGS.hero_image_1_url,
     settings.hero_image_2_url || DEFAULT_SETTINGS.hero_image_2_url,
@@ -197,11 +200,10 @@ function startHeroSlider() {
 }
 function applyHeroImages() {
   const images = getHeroImages();
+  els.heroSlider.innerHTML = images.map((src, idx) => `
+    <img class="hero-image hero-slide${idx === 0 ? " is-active" : ""}" src="${src}" alt="صورة سلايدر ${idx + 1}">
+  `).join("");
   heroSlides = Array.from(els.heroSlider.querySelectorAll(".hero-slide"));
-  heroSlides.forEach((slide, idx) => {
-    slide.src = images[idx] || images[0] || DEFAULT_SETTINGS.hero_image_1_url;
-    slide.classList.toggle("is-active", idx === 0);
-  });
   heroIndex = 0;
   renderHeroDots();
   startHeroSlider();

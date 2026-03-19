@@ -19,6 +19,7 @@ alter table public.store_settings add column if not exists telegram_url text;
 alter table public.store_settings add column if not exists hero_image_url text;
 
 alter table public.store_settings add column if not exists logo_url text;
+alter table public.store_settings add column if not exists slider_images text;
 alter table public.store_settings add column if not exists hero_image_1_url text;
 alter table public.store_settings add column if not exists hero_image_2_url text;
 alter table public.store_settings add column if not exists hero_image_3_url text;
