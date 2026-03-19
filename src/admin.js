@@ -106,6 +106,7 @@ document.querySelector("#adminApp").innerHTML = `
             <form class="stack" id="contentForm">
               <input class="input" name="store_name" placeholder="اسم المتجر">
               <input class="input" name="tagline" placeholder="الجملة القصيرة تحت اسم المتجر">
+              <input class="input" name="logo_url" placeholder="رابط اللوجو">
               <input class="input" name="hero_image_1_url" placeholder="رابط الصورة الرئيسية 1">
               <input class="input" name="hero_image_2_url" placeholder="رابط الصورة الرئيسية 2">
               <input class="input" name="hero_image_3_url" placeholder="رابط الصورة الرئيسية 3">

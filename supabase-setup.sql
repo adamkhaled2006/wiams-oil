@@ -18,6 +18,12 @@ alter table public.store_settings add column if not exists facebook_url text;
 alter table public.store_settings add column if not exists telegram_url text;
 alter table public.store_settings add column if not exists hero_image_url text;
 
+alter table public.store_settings add column if not exists logo_url text;
+alter table public.store_settings add column if not exists hero_image_1_url text;
+alter table public.store_settings add column if not exists hero_image_2_url text;
+alter table public.store_settings add column if not exists hero_image_3_url text;
+alter table public.store_settings add column if not exists hero_image_4_url text;
+
 insert into public.store_settings (
   id, store_name, tagline, hero_title, hero_subtitle, whatsapp_number, primary_color, accent_color, hero_note, hero_image_url
 )

@@ -39,3 +39,9 @@ alter table public.store_settings add column if not exists tiktok_url text;
 alter table public.store_settings add column if not exists facebook_url text;
 alter table public.store_settings add column if not exists telegram_url text;
 ```
+
+
+## تعديل جديد
+- هيرو مقسوم: نص يسار + سلايدر صور يمين
+- الشريط تحت الهيرو عائم
+- اللوجو وصور السلايدر من لوحة الأدمن

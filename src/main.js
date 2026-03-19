@@ -1,3 +1,4 @@
+
 import "./styles.css";
 import { supabase, hasSupabaseConfig, DEFAULT_SETTINGS } from "./lib/supabase.js";
 import { money, sanitizeWhatsapp, showToast, setTheme } from "./lib/utils.js";
@@ -6,7 +7,8 @@ document.querySelector("#app").innerHTML = `
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="/">
-      <span class="brand-badge">W</span>
+      <span class="brand-badge" id="brandBadge">W</span>
+      <img class="brand-logo hidden" id="brandLogo" alt="شعار المتجر">
       <div>
         <h1 id="storeName">متجر ويام</h1>
         <p id="storeTagline">زيوت عطرية، عطور، مباخر ومزهريات بلمسة فاخرة</p>
@@ -20,30 +22,51 @@ document.querySelector("#app").innerHTML = `
   </div>
 </header>
 
-<section class="hero hero-clean">
+<section class="hero hero-split">
   <div class="container">
-    <div class="hero-media-card clean-hero-card hero-slider-card">
-      <div class="hero-slider" id="heroSlider">
-        <img id="heroImage1" class="hero-image hero-slide is-active" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الأولى للمتجر">
-        <img id="heroImage2" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثانية للمتجر">
-        <img id="heroImage3" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثالثة للمتجر">
-        <img id="heroImage4" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الرابعة للمتجر">
-      </div>
-      <div class="hero-overlay hero-overlay-clean">
-        <div class="hero-chip">صور رئيسية للمتجر</div>
-        <div class="hero-actions">
-          <a class="btn" href="#products">تصفح المنتجات</a>
-          <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">واتساب</a>
+    <div class="hero-shell">
+      <div class="hero-copy-card">
+        <div class="hero-copy-top">
+          <span class="hero-badge">منتجات مختارة بعناية</span>
+          <h2 class="hero-title-fixed">كل ما يحتاجه بيتك من روائح وأناقة</h2>
+          <p class="hero-text-fixed">اكتشف تشكيلة من الزيوت العطرية، العطور، المباخر والمزهريات مع إمكانية الطلب السريع عبر واتساب.</p>
+          <div class="hero-cta">
+            <a class="btn" href="#products">تصفح المنتجات</a>
+            <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">اطلب عبر واتساب</a>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat-box">
+            <strong id="heroWhatsAppStat">100%</strong>
+            <span>طلب عبر واتساب</span>
+          </div>
+          <div class="hero-stat-box">
+            <strong>24/7</strong>
+            <span>استقبال طلبات</span>
+          </div>
+          <div class="hero-stat-box">
+            <strong id="heroProductsCount">0</strong>
+            <span>منتج متنوع</span>
+          </div>
         </div>
       </div>
-      <div class="hero-dots" id="heroDots"></div>
+
+      <div class="hero-slider-card split-slider-card">
+        <div class="hero-slider" id="heroSlider">
+          <img id="heroImage1" class="hero-image hero-slide is-active" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الأولى للمتجر">
+          <img id="heroImage2" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1615634262417-0f2d4f16c93c?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثانية للمتجر">
+          <img id="heroImage3" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الثالثة للمتجر">
+          <img id="heroImage4" class="hero-image hero-slide" src="https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية الرابعة للمتجر">
+        </div>
+        <div class="hero-dots hero-dots-split" id="heroDots"></div>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="filters-wrap" id="products">
+<section class="filters-wrap filters-floating" id="products">
   <div class="container">
-    <div class="filters">
+    <div class="filters filters-card-floating">
       <input class="input" id="searchInput" placeholder="ابحث عن منتج..." />
       <select class="select" id="categoryFilter"><option value="all">كل الأقسام</option></select>
       <select class="select" id="sortFilter">
@@ -98,8 +121,11 @@ const $ = (s) => document.querySelector(s);
 const els = {
   storeName: $("#storeName"),
   storeTagline: $("#storeTagline"),
+  brandBadge: $("#brandBadge"),
+  brandLogo: $("#brandLogo"),
   heroSlider: $("#heroSlider"),
   heroDots: $("#heroDots"),
+  heroProductsCount: $("#heroProductsCount"),
   waTop: $("#waTop"),
   waFooter: $("#waFooter"),
   socialLinks: $("#socialLinks"),
@@ -138,55 +164,48 @@ function waLink() {
   const n = sanitizeWhatsapp(settings.whatsapp_number);
   return n ? `https://wa.me/${n}` : "#";
 }
-
-
 function getHeroImages() {
   return [
     settings.hero_image_1_url || settings.hero_image_url || DEFAULT_SETTINGS.hero_image_1_url,
     settings.hero_image_2_url || DEFAULT_SETTINGS.hero_image_2_url,
     settings.hero_image_3_url || DEFAULT_SETTINGS.hero_image_3_url,
     settings.hero_image_4_url || DEFAULT_SETTINGS.hero_image_4_url
-  ].map(v => String(v || '').trim()).filter(Boolean);
+  ].map(v => String(v || "").trim()).filter(Boolean);
 }
-
 function renderHeroDots() {
-  els.heroDots.innerHTML = '';
+  els.heroDots.innerHTML = "";
   heroSlides.forEach((_, idx) => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `hero-dot${idx === heroIndex ? ' is-active' : ''}`;
-    btn.setAttribute('aria-label', `الصورة ${idx + 1}`);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `hero-dot${idx === heroIndex ? " is-active" : ""}`;
+    btn.setAttribute("aria-label", `الصورة ${idx + 1}`);
     btn.onclick = () => setHeroSlide(idx, true);
     els.heroDots.appendChild(btn);
   });
 }
-
 function setHeroSlide(index, restart = false) {
   if (!heroSlides.length) return;
-  heroIndex = index % heroSlides.length;
-  heroSlides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === heroIndex));
-  [...els.heroDots.children].forEach((dot, idx) => dot.classList.toggle('is-active', idx === heroIndex));
+  heroIndex = ((index % heroSlides.length) + heroSlides.length) % heroSlides.length;
+  heroSlides.forEach((slide, idx) => slide.classList.toggle("is-active", idx === heroIndex));
+  [...els.heroDots.children].forEach((dot, idx) => dot.classList.toggle("is-active", idx === heroIndex));
   if (restart) startHeroSlider();
 }
-
 function startHeroSlider() {
   if (heroTimer) clearInterval(heroTimer);
   if (heroSlides.length <= 1) return;
   heroTimer = setInterval(() => setHeroSlide(heroIndex + 1), 3500);
 }
-
 function applyHeroImages() {
   const images = getHeroImages();
-  heroSlides = Array.from(els.heroSlider.querySelectorAll('.hero-slide'));
+  heroSlides = Array.from(els.heroSlider.querySelectorAll(".hero-slide"));
   heroSlides.forEach((slide, idx) => {
     slide.src = images[idx] || images[0] || DEFAULT_SETTINGS.hero_image_1_url;
-    slide.classList.toggle('is-active', idx === 0);
+    slide.classList.toggle("is-active", idx === 0);
   });
   heroIndex = 0;
   renderHeroDots();
   startHeroSlider();
 }
-
 function renderSocialLinks() {
   const links = [
     { key: "instagram_url", label: "Instagram", icon: "📸" },
@@ -207,16 +226,30 @@ function renderSocialLinks() {
     els.socialLinks.appendChild(a);
   });
 }
-
+function applyLogo() {
+  const logo = String(settings.logo_url || "").trim();
+  if (logo) {
+    els.brandLogo.src = logo;
+    els.brandLogo.classList.remove("hidden");
+    els.brandBadge.classList.add("hidden");
+  } else {
+    els.brandLogo.classList.add("hidden");
+    els.brandBadge.classList.remove("hidden");
+  }
+}
 function applySettings() {
   setTheme(settings);
   document.title = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeName.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeTagline.textContent = settings.tagline || DEFAULT_SETTINGS.tagline;
+  applyLogo();
   applyHeroImages();
   els.waTop.href = waLink();
   els.waFooter.href = waLink();
   renderSocialLinks();
+}
+function updateHeroStats() {
+  els.heroProductsCount.textContent = String(products.length);
 }
 function openDrawer() {
   els.cartDrawer.classList.add("open");
@@ -311,6 +344,7 @@ function renderProducts() {
   const prev = els.categoryFilter.value;
   els.categoryFilter.innerHTML = `<option value="all">كل الأقسام</option>` + categories.map(c=>`<option value="${c}">${c}</option>`).join("");
   if (categories.includes(prev)) els.categoryFilter.value = prev;
+  updateHeroStats();
 }
 function renderCart() {
   saveCart();
@@ -415,6 +449,7 @@ els.checkoutForm.onsubmit = async (e) => {
 (async function init(){
   applySettings();
   renderCart();
+  updateHeroStats();
   await loadSettings();
   await loadProducts();
 })();
