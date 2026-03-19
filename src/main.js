@@ -20,29 +20,16 @@ document.querySelector("#app").innerHTML = `
   </div>
 </header>
 
-<section class="hero">
-  <div class="container hero-grid">
-    <div class="hero-card hero-copy">
-      <span class="eyebrow" id="heroNote">شحن أنيق وتجربة فاخرة</span>
-      <h2 id="heroTitle">روائح فاخرة ومنتجات مميزة تصل لزبونك بسهولة</h2>
-      <p id="heroSubtitle">متجر احترافي مع سلة، طلبات، مخزون، حالة Sold Out، ولوحة تحكم بسيطة.</p>
-      <div class="hero-actions">
-        <a class="btn" href="#products">تصفح المنتجات</a>
-        <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">واتساب</a>
-      </div>
-    </div>
-    <div class="hero-side glass-card">
-      <div class="feature-box">
-        <strong>ثيم فاخر ومرتب</strong>
-        <div class="muted">متجر مناسب للعطور والزيوت والمباخر والمزهريات.</div>
-      </div>
-      <div class="mini-stats">
-        <div class="stat"><span>عدد المنتجات</span><strong id="productsCount">0</strong></div>
-        <div class="stat"><span>الفئات</span><strong id="categoriesCount">0</strong></div>
-      </div>
-      <div class="note-card">
-        <strong>الحالة</strong>
-        <div class="muted">المتجر مربوط بـ Supabase والطلبات تنحفظ مباشرة.</div>
+<section class="hero hero-clean">
+  <div class="container">
+    <div class="hero-media-card clean-hero-card">
+      <img id="heroImage" class="hero-image" src="https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80" alt="الصورة الرئيسية للمتجر">
+      <div class="hero-overlay hero-overlay-clean">
+        <div class="hero-chip">الصورة الرئيسية للمتجر</div>
+        <div class="hero-actions">
+          <a class="btn" href="#products">تصفح المنتجات</a>
+          <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">واتساب</a>
+        </div>
       </div>
     </div>
   </div>
@@ -91,24 +78,10 @@ document.querySelector("#app").innerHTML = `
 </aside>
 <div class="overlay" id="overlay"></div>
 
-<footer class="footer">
-  <div class="container">
-    <div class="glass-card footer-box">
-      <div>
-        <strong id="footerStore">متجر ويام</strong>
-        <div class="muted">نسخة متجر مرتبطة بقاعدة بيانات وقابلة للتعديل من لوحة الأدمن.</div>
-      </div>
-      <div class="footer-actions">
-        <a class="ghost-btn" id="waFooter" href="#" target="_blank" rel="noreferrer">واتساب</a>
-      </div>
-    </div>
-    <div class="glass-card social-box hidden" id="socialBox">
-      <div>
-        <strong>تابعنا على السوشال</strong>
-        <div class="muted">روابط التواصل الاجتماعية يتم تعديلها من لوحة الأدمن.</div>
-      </div>
-      <div class="social-links" id="socialLinks"></div>
-    </div>
+<footer class="footer footer-clean">
+  <div class="container footer-clean-wrap">
+    <a class="ghost-btn" id="waFooter" href="#" target="_blank" rel="noreferrer">واتساب</a>
+    <div class="social-links" id="socialLinks"></div>
   </div>
 </footer>
 
@@ -118,22 +91,16 @@ document.querySelector("#app").innerHTML = `
 const $ = (s) => document.querySelector(s);
 const els = {
   storeName: $("#storeName"),
-  footerStore: $("#footerStore"),
   storeTagline: $("#storeTagline"),
-  heroTitle: $("#heroTitle"),
-  heroSubtitle: $("#heroSubtitle"),
-  heroNote: $("#heroNote"),
+  heroImage: $("#heroImage"),
   waTop: $("#waTop"),
   waFooter: $("#waFooter"),
-  socialBox: $("#socialBox"),
   socialLinks: $("#socialLinks"),
   productsGrid: $("#productsGrid"),
   emptyBox: $("#emptyBox"),
   searchInput: $("#searchInput"),
   categoryFilter: $("#categoryFilter"),
   sortFilter: $("#sortFilter"),
-  productsCount: $("#productsCount"),
-  categoriesCount: $("#categoriesCount"),
   openCart: $("#openCart"),
   closeCart: $("#closeCart"),
   cartDrawer: $("#cartDrawer"),
@@ -164,22 +131,21 @@ function waLink() {
 
 function renderSocialLinks() {
   const links = [
-    { key: "instagram_url", label: "Instagram" },
-    { key: "snapchat_url", label: "Snapchat" },
-    { key: "tiktok_url", label: "TikTok" },
-    { key: "facebook_url", label: "Facebook" },
-    { key: "telegram_url", label: "Telegram" }
+    { key: "instagram_url", label: "Instagram", icon: "📸" },
+    { key: "snapchat_url", label: "Snapchat", icon: "👻" },
+    { key: "tiktok_url", label: "TikTok", icon: "🎵" },
+    { key: "facebook_url", label: "Facebook", icon: "f" },
+    { key: "telegram_url", label: "Telegram", icon: "✈️" }
   ].filter(item => String(settings[item.key] || "").trim());
 
   els.socialLinks.innerHTML = "";
-  els.socialBox.classList.toggle("hidden", links.length === 0);
   links.forEach(item => {
     const a = document.createElement("a");
     a.className = "social-link";
     a.href = settings[item.key];
     a.target = "_blank";
     a.rel = "noreferrer";
-    a.textContent = item.label;
+    a.innerHTML = `<span class="social-icon">${item.icon}</span><span>${item.label}</span>`;
     els.socialLinks.appendChild(a);
   });
 }
@@ -188,11 +154,8 @@ function applySettings() {
   setTheme(settings);
   document.title = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeName.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
-  els.footerStore.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeTagline.textContent = settings.tagline || DEFAULT_SETTINGS.tagline;
-  els.heroTitle.textContent = settings.hero_title || DEFAULT_SETTINGS.hero_title;
-  els.heroSubtitle.textContent = settings.hero_subtitle || DEFAULT_SETTINGS.hero_subtitle;
-  els.heroNote.textContent = settings.hero_note || DEFAULT_SETTINGS.hero_note;
+  els.heroImage.src = settings.hero_image_url || DEFAULT_SETTINGS.hero_image_url;
   els.waTop.href = waLink();
   els.waFooter.href = waLink();
   renderSocialLinks();
@@ -290,8 +253,6 @@ function renderProducts() {
   const prev = els.categoryFilter.value;
   els.categoryFilter.innerHTML = `<option value="all">كل الأقسام</option>` + categories.map(c=>`<option value="${c}">${c}</option>`).join("");
   if (categories.includes(prev)) els.categoryFilter.value = prev;
-  els.productsCount.textContent = products.length;
-  els.categoriesCount.textContent = categories.length;
 }
 function renderCart() {
   saveCart();
@@ -348,7 +309,6 @@ async function loadProducts() {
   renderProducts();
 }
 
-
 async function submitOrder(fd) {
   const notes = fd.get("notes")?.trim() || "";
   const payload = {
@@ -363,8 +323,6 @@ async function submitOrder(fd) {
   const items = cart.map(i => ({ order_id: order.id, product_name: i.name, price: i.price, quantity: i.quantity }));
   const ins = await supabase.from("order_items").insert(items);
   if (ins.error) throw ins.error;
-  // لا نحدّث مخزون المنتجات من واجهة الزبون لأن سياسات Supabase تمنع ذلك للمستخدم العام.
-  // الطلب ينحفظ هنا، وتعديل المخزون يتم من لوحة الأدمن لاحقًا أو عبر باك إند آمن.
   const w = sanitizeWhatsapp(settings.whatsapp_number);
   if (!w) throw new Error("WhatsApp number is missing");
   const waUrl = `https://wa.me/${w}?text=${buildWAOrder({ ...payload, notes }, items)}`;

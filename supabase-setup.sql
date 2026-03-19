@@ -11,8 +11,15 @@ create table if not exists public.store_settings (
   hero_note text
 );
 
+alter table public.store_settings add column if not exists instagram_url text;
+alter table public.store_settings add column if not exists snapchat_url text;
+alter table public.store_settings add column if not exists tiktok_url text;
+alter table public.store_settings add column if not exists facebook_url text;
+alter table public.store_settings add column if not exists telegram_url text;
+alter table public.store_settings add column if not exists hero_image_url text;
+
 insert into public.store_settings (
-  id, store_name, tagline, hero_title, hero_subtitle, whatsapp_number, primary_color, accent_color, hero_note
+  id, store_name, tagline, hero_title, hero_subtitle, whatsapp_number, primary_color, accent_color, hero_note, hero_image_url
 )
 values (
   1,
@@ -23,7 +30,8 @@ values (
   '',
   '#6f4e37',
   '#d8c1a8',
-  'شحن أنيق وتجربة فاخرة'
+  'شحن أنيق وتجربة فاخرة',
+  'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1600&q=80'
 )
 on conflict (id) do nothing;
 

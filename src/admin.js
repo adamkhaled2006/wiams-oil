@@ -102,14 +102,13 @@ document.querySelector("#adminApp").innerHTML = `
           </section>
 
           <section class="panel admin-tab hidden" data-panel="content">
-            <div class="panel-head"><h3>النصوص والمحتوى</h3></div>
+            <div class="panel-head"><h3>الصورة الرئيسية والهوية</h3></div>
             <form class="stack" id="contentForm">
               <input class="input" name="store_name" placeholder="اسم المتجر">
-              <input class="input" name="tagline" placeholder="الجملة القصيرة">
-              <input class="input" name="hero_title" placeholder="عنوان الواجهة">
-              <textarea class="input" name="hero_subtitle" placeholder="وصف الواجهة"></textarea>
-              <input class="input" name="hero_note" placeholder="النص الصغير أعلى الواجهة">
-              <button class="btn" type="submit">حفظ النصوص</button>
+              <input class="input" name="tagline" placeholder="الجملة القصيرة تحت اسم المتجر">
+              <input class="input" name="hero_image_url" placeholder="رابط الصورة الرئيسية">
+              <div class="muted">ضع هنا رابط الصورة الرئيسية التي تريد ظهورها أعلى الصفحة. لن تظهر النصوص القديمة في الواجهة.</div>
+              <button class="btn" type="submit">حفظ المحتوى</button>
             </form>
           </section>
 
