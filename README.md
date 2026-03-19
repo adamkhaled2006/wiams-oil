@@ -1,1 +1,1 @@
-# Wiam Store Project
+<!DOCTYPE html><html><head><title>Admin</title></head><body><h1>Admin Panel</h1><script type='module' src='/src/admin.js'></script></body></html>

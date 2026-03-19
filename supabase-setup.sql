@@ -1,1 +1,1 @@
--- SQL setup placeholder
+<!DOCTYPE html><html><head><title>Wiam</title></head><body><div id='app'></div><script type='module' src='/src/main.js'></script></body></html>

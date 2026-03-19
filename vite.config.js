@@ -1,1 +1,1 @@
-import { defineConfig } from 'vite'; export default defineConfig({});
+{ "name": "wiam-store", "version": "1.0.0", "scripts": { "dev": "vite", "build": "vite build" } }
