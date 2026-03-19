@@ -20,29 +20,36 @@ document.querySelector("#app").innerHTML = `
   </div>
 </header>
 
-<section class="hero">
-  <div class="container hero-grid">
-    <div class="hero-card hero-copy">
-      <span class="eyebrow" id="heroNote">شحن أنيق وتجربة فاخرة</span>
-      <h2 id="heroTitle">روائح فاخرة ومنتجات مميزة تصل لزبونك بسهولة</h2>
-      <p id="heroSubtitle">متجر احترافي مع سلة، طلبات، مخزون، حالة Sold Out، ولوحة تحكم بسيطة.</p>
-      <div class="hero-actions">
-        <a class="btn" href="#products">تصفح المنتجات</a>
-        <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">واتساب</a>
+<section class="showcase">
+  <div class="container">
+    <div class="showcase-grid">
+      <div class="showcase-media">
+        <div class="showcase-slider" id="heroSlider"></div>
       </div>
-    </div>
-    <div class="hero-side glass-card">
-      <div class="feature-box">
-        <strong>ثيم فاخر ومرتب</strong>
-        <div class="muted">متجر مناسب للعطور والزيوت والمباخر والمزهريات.</div>
-      </div>
-      <div class="mini-stats">
-        <div class="stat"><span>عدد المنتجات</span><strong id="productsCount">0</strong></div>
-        <div class="stat"><span>الفئات</span><strong id="categoriesCount">0</strong></div>
-      </div>
-      <div class="note-card">
-        <strong>الحالة</strong>
-        <div class="muted">المتجر مربوط بـ Supabase والطلبات تنحفظ مباشرة.</div>
+
+      <div class="showcase-copy">
+        <span class="showcase-badge">منتجات مختارة بعناية</span>
+        <h2 id="heroTitle">كل ما يحتاجه بيتك من روائح وأناقة</h2>
+        <p id="heroSubtitle">اكتشف تشكيلة من الزيوت العطرية، العطور والمباخر مع إمكانية الطلب السريع عبر واتساب.</p>
+        <div class="showcase-actions">
+          <a class="btn" href="#products">تصفح المنتجات</a>
+          <a class="ghost-btn" id="waTop" href="#" target="_blank" rel="noreferrer">اطلب عبر واتساب</a>
+        </div>
+
+        <div class="showcase-stats">
+          <div class="show-stat">
+            <strong id="productsCount">0</strong>
+            <span>منتج متنوع</span>
+          </div>
+          <div class="show-stat">
+            <strong>24/7</strong>
+            <span>استقبال طلبات</span>
+          </div>
+          <div class="show-stat">
+            <strong>100%</strong>
+            <span>طلب عبر واتساب</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -93,21 +100,15 @@ document.querySelector("#app").innerHTML = `
 
 <footer class="footer">
   <div class="container">
-    <div class="glass-card footer-box">
-      <div>
+    <div class="glass-card footer-bar">
+      <div class="footer-brand">
         <strong id="footerStore">متجر ويام</strong>
-        <div class="muted">نسخة متجر مرتبطة بقاعدة بيانات وقابلة للتعديل من لوحة الأدمن.</div>
+        <div class="muted" id="footerTagline">زيوت عطرية، عطور، مباخر ومزهريات بلمسة فاخرة</div>
       </div>
       <div class="footer-actions">
         <a class="ghost-btn" id="waFooter" href="#" target="_blank" rel="noreferrer">واتساب</a>
+        <div class="social-links" id="socialLinks"></div>
       </div>
-    </div>
-    <div class="glass-card social-box hidden" id="socialBox">
-      <div>
-        <strong>تابعنا على السوشال</strong>
-        <div class="muted">روابط التواصل الاجتماعية يتم تعديلها من لوحة الأدمن.</div>
-      </div>
-      <div class="social-links" id="socialLinks"></div>
     </div>
   </div>
 </footer>
@@ -122,11 +123,11 @@ const els = {
   storeTagline: $("#storeTagline"),
   heroTitle: $("#heroTitle"),
   heroSubtitle: $("#heroSubtitle"),
-  heroNote: $("#heroNote"),
   waTop: $("#waTop"),
   waFooter: $("#waFooter"),
-  socialBox: $("#socialBox"),
   socialLinks: $("#socialLinks"),
+  footerTagline: $("#footerTagline"),
+  heroSlider: $("#heroSlider"),
   productsGrid: $("#productsGrid"),
   emptyBox: $("#emptyBox"),
   searchInput: $("#searchInput"),
@@ -172,7 +173,7 @@ function renderSocialLinks() {
   ].filter(item => String(settings[item.key] || "").trim());
 
   els.socialLinks.innerHTML = "";
-  els.socialBox.classList.toggle("hidden", links.length === 0);
+  els.socialLinks.style.display = links.length ? "flex" : "none";
   links.forEach(item => {
     const a = document.createElement("a");
     a.className = "social-link";
@@ -184,15 +185,45 @@ function renderSocialLinks() {
   });
 }
 
+
+const FALLBACK_HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1615634260167-c8cdede054de?auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1601295452898-7dfe8a9d7fc3?auto=format&fit=crop&w=1200&q=80"
+];
+let heroTimer = null;
+function getHeroImages() {
+  const fromProducts = products.map(p => p.image).filter(Boolean).slice(0,4);
+  return (fromProducts.length ? fromProducts : FALLBACK_HERO_IMAGES).slice(0,4);
+}
+function renderHeroSlider() {
+  if (!els.heroSlider) return;
+  const images = getHeroImages();
+  els.heroSlider.innerHTML = images.map(src => `<div class="hero-slide" style="background-image:url('${src}')"></div>`).join("");
+  let index = 0;
+  const update = () => {
+    els.heroSlider.style.transform = `translateX(-${index * 100}%)`;
+  };
+  update();
+  if (heroTimer) clearInterval(heroTimer);
+  if (images.length > 1) {
+    heroTimer = setInterval(() => {
+      index = (index + 1) % images.length;
+      update();
+    }, 3500);
+  }
+}
+
 function applySettings() {
   setTheme(settings);
   document.title = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeName.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.footerStore.textContent = settings.store_name || DEFAULT_SETTINGS.store_name;
   els.storeTagline.textContent = settings.tagline || DEFAULT_SETTINGS.tagline;
+  els.footerTagline.textContent = settings.tagline || DEFAULT_SETTINGS.tagline;
   els.heroTitle.textContent = settings.hero_title || DEFAULT_SETTINGS.hero_title;
   els.heroSubtitle.textContent = settings.hero_subtitle || DEFAULT_SETTINGS.hero_subtitle;
-  els.heroNote.textContent = settings.hero_note || DEFAULT_SETTINGS.hero_note;
   els.waTop.href = waLink();
   els.waFooter.href = waLink();
   renderSocialLinks();
@@ -346,6 +377,8 @@ async function loadProducts() {
   }
   products = data || [];
   renderProducts();
+  els.productsCount.textContent = products.length;
+  renderHeroSlider();
 }
 
 
@@ -399,24 +432,7 @@ els.checkoutForm.onsubmit = async (e) => {
 (async function init(){
   applySettings();
   renderCart();
+  renderHeroSlider();
   await loadSettings();
   await loadProducts();
 })();
-
-const images=[
-"https://images.unsplash.com/photo-1594035910387-fea47794261f",
-"https://images.unsplash.com/photo-1615634260167-c8cdede054de",
-"https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
-"https://images.unsplash.com/photo-1600185365483-26d7a4cc7519"
-];
-const slider=document.getElementById("slider");
-if(slider){
-images.forEach(img=>{
- const d=document.createElement("div");
- d.className="slide";
- d.style.backgroundImage=`url(${img})`;
- slider.appendChild(d);
-});
-let i=0;
-setInterval(()=>{i=(i+1)%images.length;slider.style.transform=`translateX(-${i*100}%)`},4000);
-}
