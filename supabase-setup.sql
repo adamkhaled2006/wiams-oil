@@ -122,3 +122,56 @@ drop policy if exists "admin can delete product images" on storage.objects;
 create policy "admin can delete product images"
 on storage.objects for delete
 using (bucket_id = 'product-images' and public.is_admin());
+
+
+create or replace function public.decrement_product_stock(order_id_input bigint, items_input jsonb)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  item jsonb;
+  product_row public.products%rowtype;
+  requested_qty integer;
+  affected_rows integer;
+begin
+  if items_input is null or jsonb_typeof(items_input) <> 'array' then
+    raise exception 'items_input must be a JSON array';
+  end if;
+
+  for item in select * from jsonb_array_elements(items_input)
+  loop
+    requested_qty := greatest(coalesce((item->>'qty')::integer, 0), 0);
+    if requested_qty <= 0 then
+      continue;
+    end if;
+
+    select * into product_row
+    from public.products
+    where id = (item->>'product_id')::bigint
+    for update;
+
+    if not found then
+      raise exception 'المنتج غير موجود';
+    end if;
+
+    if coalesce(product_row.sold_out, false) or coalesce(product_row.stock, 0) < requested_qty then
+      raise exception 'الكمية المطلوبة من % غير متوفرة', coalesce(product_row.name, 'المنتج');
+    end if;
+
+    update public.products
+    set
+      stock = greatest(coalesce(stock, 0) - requested_qty, 0),
+      sold_out = case when greatest(coalesce(stock, 0) - requested_qty, 0) <= 0 then true else coalesce(sold_out, false) end
+    where id = product_row.id;
+
+    GET DIAGNOSTICS affected_rows = ROW_COUNT;
+    if affected_rows = 0 then
+      raise exception 'فشل تحديث المخزون';
+    end if;
+  end loop;
+end;
+$$;
+
+grant execute on function public.decrement_product_stock(bigint, jsonb) to anon, authenticated;
