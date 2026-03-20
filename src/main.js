@@ -402,7 +402,84 @@ async function loadProducts() {
   renderProducts();
 }
 
+async function syncCartWithLatestStock() {
+  if (!cart.length) return [];
+
+  const productIds = cart.map(item => item.id);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id,name,stock,sold_out")
+    .in("id", productIds);
+
+  if (error) throw error;
+
+  const latestById = new Map((data || []).map(product => [product.id, product]));
+  const issues = [];
+
+  cart = cart
+    .map(item => {
+      const latest = latestById.get(item.id);
+      if (!latest) {
+        issues.push(`المنتج ${item.name} لم يعد موجودًا`);
+        return null;
+      }
+
+      const latestStock = Math.max(0, Number(latest.stock || 0));
+      if (latest.sold_out || latestStock <= 0) {
+        issues.push(`المنتج ${item.name} غير متوفر حاليًا`);
+        return null;
+      }
+
+      const nextQty = Math.min(item.quantity, latestStock);
+      if (nextQty < item.quantity) {
+        issues.push(`تم تعديل كمية ${item.name} إلى ${nextQty} بسبب المخزون`);
+      }
+
+      return { ...item, name: latest.name || item.name, stock: latestStock, quantity: nextQty };
+    })
+    .filter(Boolean);
+
+  saveCart();
+  renderCart();
+
+  if (!cart.length) {
+    throw new Error(issues[0] || "السلة أصبحت فارغة");
+  }
+
+  if (issues.length) {
+    throw new Error(issues[0]);
+  }
+
+  return data || [];
+}
+
+async function decreaseStockAfterOrder(latestProducts) {
+  const latestById = new Map((latestProducts || []).map(product => [product.id, product]));
+
+  for (const item of cart) {
+    const latest = latestById.get(item.id);
+    if (!latest) throw new Error(`تعذر تحديث مخزون ${item.name}`);
+
+    const currentStock = Math.max(0, Number(latest.stock || 0));
+    if (item.quantity > currentStock) {
+      throw new Error(`الكمية المطلوبة من ${item.name} لم تعد متوفرة`);
+    }
+
+    const nextStock = Math.max(0, currentStock - Number(item.quantity || 0));
+    const { error } = await supabase
+      .from("products")
+      .update({
+        stock: nextStock,
+        sold_out: Boolean(latest.sold_out) || nextStock <= 0
+      })
+      .eq("id", item.id);
+
+    if (error) throw error;
+  }
+}
+
 async function submitOrder(fd) {
+  const latestProducts = await syncCartWithLatestStock();
   const notes = fd.get("notes")?.trim() || "";
   const payload = {
     customer_name: fd.get("customer_name"),
@@ -416,8 +493,11 @@ async function submitOrder(fd) {
   const items = cart.map(i => ({ order_id: order.id, product_name: i.name, price: i.price, quantity: i.quantity }));
   const ins = await supabase.from("order_items").insert(items);
   if (ins.error) throw ins.error;
+
+  await decreaseStockAfterOrder(latestProducts);
+
   const w = sanitizeWhatsapp(settings.whatsapp_number);
-  if (!w) throw new Error("WhatsApp number is missing");
+  if (!w) throw new Error("رقم الواتساب غير موجود");
   const waUrl = `https://wa.me/${w}?text=${buildWAOrder({ ...payload, notes }, items)}`;
 
   cart = [];
@@ -426,7 +506,7 @@ async function submitOrder(fd) {
   closeDrawer();
   await loadProducts();
 
-  window.open(waUrl, "_blank", "noopener,noreferrer");
+  window.location.href = waUrl;
   showToast(els.toast, "تم حفظ الطلب وفتح واتساب ✅");
 }
 els.openCart.onclick = openDrawer;
@@ -439,9 +519,12 @@ els.sortFilter.onchange = renderProducts;
 els.checkoutForm.onsubmit = async (e) => {
   e.preventDefault();
   if (!cart.length) return showToast(els.toast, "السلة فارغة");
+
+  const form = e.currentTarget;
+
   try {
-    await submitOrder(new FormData(e.currentTarget));
-    e.currentTarget.reset();
+    await submitOrder(new FormData(form));
+    form.reset();
   } catch (err) {
     console.error(err);
     showToast(els.toast, err?.message || "فشل حفظ الطلب");
